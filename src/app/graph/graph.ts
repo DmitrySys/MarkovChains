@@ -37,6 +37,7 @@ export const NodeCoords: Coords[] = [
   new Coords(1, 55.043593283202625, 82.93368560311930),   //Mr.Pokrishkina
   new Coords(1, 55.043766568284130, 82.95154125392428),   //Birch Grove
   new Coords(1, 55.037335488562740, 82.97743632721350),   //Golden cornfield
+  new Coords(1,55.0288141255574500,82.937891836507380),   //Aura
 ];
 export function LineLength(a:number[],b:number[]):number{
   return Math.abs(Math.sqrt(Math.pow((a[0]-b[0]),2)+Math.pow((a[1]-b[1]),2)))*100000*0.70;

@@ -19,7 +19,7 @@ export class MapLoaderService {
   async getMap(element: string): Promise<any> {
     const mapContainer = document.createElement("div");
     document.getElementById(element).appendChild(mapContainer);
-    mapContainer.style.height = "512px";
+    mapContainer.style.height = "800px";
     mapContainer.style.width = "100%";
     const map = new this.ymapsApi.Map(mapContainer, {
       center: [55.00910478591716, 82.93678258251948],
