@@ -1,6 +1,10 @@
 ﻿export const graph: Node[] = [
 ];
-
+export class User {
+  coords:Coords;
+  name:string;
+  color:string;
+}
 export class Node {
   coordsID: number;
   name: string;

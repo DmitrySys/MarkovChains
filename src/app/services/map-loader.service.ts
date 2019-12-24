@@ -44,7 +44,6 @@ export class MapLoaderService {
         point: [to.x,to.y]
       }
     ], {
-      mapStateAutoApply: true
     });
     return r;
   }
