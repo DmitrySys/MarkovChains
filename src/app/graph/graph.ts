@@ -1,34 +1,14 @@
-﻿export const graph: Node[] = [
-];
-export class User {
-  coords:Coords;
-  name:string;
-  color:string;
-}
-export class Node {
-  coordsID: number;
-  name: string;
+﻿export class Coords {
   id: number;
-  relatedToNodes: number[];
-  constructor(id:number,name: string,coordsID: number,relatedToNodes: number[]) {
-    this.id = id;
-    this.name = name;
-    this.coordsID = coordsID;
-    this.relatedToNodes = relatedToNodes;
-  }
-}
+  x: number;
+  y: number;
 
-export class Coords {
-  id:number;
-  x:number;
-  y:number;
   constructor(id: number, x: number, y: number) {
     this.id = id;
     this.x = x;
     this.y = y;
   }
 }
-
 export const NodeCoords: Coords[] = [
   new Coords(1, 55.059484144794020, 82.91256437331396),   //Zaelchovskaya
   new Coords(1, 55.050189155671980, 82.91494492777507),   //Gagarinskaya
@@ -41,8 +21,6 @@ export const NodeCoords: Coords[] = [
   new Coords(1, 55.043593283202625, 82.93368560311930),   //Mr.Pokrishkina
   new Coords(1, 55.043766568284130, 82.95154125392428),   //Birch Grove
   new Coords(1, 55.037335488562740, 82.97743632721350),   //Golden cornfield
-  new Coords(1,55.0288141255574500,82.937891836507380),   //Aura
+  new Coords(1, 55.0288141255574500, 82.937891836507380),   //Aura
 ];
-export function LineLength(a:number[],b:number[]):number{
-  return Math.abs(Math.sqrt(Math.pow((a[0]-b[0]),2)+Math.pow((a[1]-b[1]),2)))*100000*0.70;
-}
+

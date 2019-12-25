@@ -1,62 +1,58 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MapLoaderService} from "../services/map-loader.service";
-import {Coords, LineLength, NodeCoords, User} from "../graph/graph";
+import {BehaviorSubject} from "rxjs";
+import {Engine} from "../engine/engine";
+import {User} from "../models/common";
+import {IClickEvent, IMap} from "../models/yandex-api";
+import {UserBuilder} from "../tools/user-builder";
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'mc-root',
   templateUrl: './root.component.html',
   styleUrls: ['./root.component.less']
 })
-export class RootComponent implements OnInit {
-  clickedToCoord: string = '';
-  map;
-  framePerSecond = 10;
-  constructor(private mapService: MapLoaderService) {
+export class RootComponent implements OnInit,OnDestroy {
+  map:IMap;
+  engine: Engine;
+  private userBuilder:UserBuilder;
+  selectedUser: BehaviorSubject<User>;
+  users:Array<User>;
 
-  }
-  curPlaceMark;
-  curRoute;
-  coords: number[][];
-  lastP;
-  click = (e) => {
-    if(this.curRoute && this.curPlaceMark)
-    {
-      this.map.geoObjects.remove(this.curRoute);
-      this.map.geoObjects.remove(this.curPlaceMark);
-    }
-    var points = NodeCoords;
-    const f = this.lastP ? this.lastP: points[Math.floor(Math.random() * points.length)];
-    const t = points[Math.floor(Math.random() * points.length)];
-    this.lastP = t;
-    this.mapService.getRoute(f, t).then(route => {
-      this.curRoute = route;
-      this.clickedToCoord = (route.getLength()/1000).toString() + ' km.';
-      route.getPaths().each(v => this.coords = v.geometry.getCoordinates());
-      this.clickedToCoord = route.properties.get("distance");
-      this.map.geoObjects.add(route);
-      this.curPlaceMark = this.mapService.addPlacemark([f.x,f.y]);
-      this.move(this.curPlaceMark.geometry,0,this.coords);
-    });
-  };
-
-  getNextDirection(user:User):void
-  {
-    //TODO Implement Markov's chains
+  constructor(private mapService: MapLoaderService,private userService:UserService) {
+    this.userBuilder = new UserBuilder(mapService);
+    this.engine = new Engine(userService,{stepTime: 50, distance: 0.00001});
+    this.users = this.engine.users;
+    this.selectedUser = new BehaviorSubject<User>(null);
   }
 
-  move(point:any,iterator:number,coords: number[][])
-  {
-      if(coords[iterator])
-      {
-        const nextIterator = iterator.toString().split('.')[1] ? iterator + 0.2 : iterator + 1;
-        setTimeout(() => {
-          point.setCoordinates(coords[iterator]);
-          this.move(point,nextIterator,coords);
-        },1000/this.framePerSecond);
-      } else {
-        this.click(null);
+  addUser(e: any): void {
+    const user = this.userBuilder.createUser();
+    user.placemark.events.add('click', (e) => this.onClickedAtPlacemark(e));
+    this.engine.addUser(user);
+    this.engine.run();
+  }
+
+  onClickedAtPlacemark(e: IClickEvent) {
+    if (e && e.originalEvent && e.originalEvent.target && e.originalEvent.target.guid) {
+      let user = this.engine.getUserByPlacemarkGuid(e.originalEvent.target.guid);
+      if (user) {
+        this.selectedUser.next(user);
       }
+    }
   }
+
+  remove(user:User)
+  {
+    this.map.geoObjects.remove(user.placemark);
+    this.engine.removeUser(user);
+    this.closeCard();
+  }
+  closeCard()
+  {
+    this.selectedUser.next(null);
+  }
+
   ngOnInit() {
     setTimeout(() => this.loadMap(), 1000);
   }
@@ -64,14 +60,13 @@ export class RootComponent implements OnInit {
   loadMap() {
     this.mapService.getMap('map').then(map => {
         this.map = map;
-        map.events.add('click', e => {
-          const coords = e.get('coords');
-          this.clickedToCoord = coords;
-        });
-        map.events.add('contextmenu', e => {
-
-        });
+        this.addUser(null);
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    this.selectedUser.unsubscribe();
+    this.engine.destroy();
   }
 }
