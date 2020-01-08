@@ -1,11 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MapLoaderService} from "../services/map-loader.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subscription} from "rxjs";
 import {Engine} from "../engine/engine";
 import {User} from "../models/common";
 import {IClickEvent, IMap} from "../models/yandex-api";
 import {UserBuilder} from "../tools/user-builder";
 import {UserService} from "../services/user.service";
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'mc-root',
@@ -32,7 +33,32 @@ export class RootComponent implements OnInit,OnDestroy {
     this.engine.addUser(user);
     this.engine.run();
   }
-
+  followSub:Subscription;
+  selectUser(user)
+  {
+    if(this.followSub)
+    {
+      this.followSub.unsubscribe();
+    }
+    let u = this.engine.getUserByPlacemarkGuid(user.placemark.guid);
+    if (u) {
+      this.map.panTo([this.map.getCenter(),[u.placemark.geometry._coordinates[0],u.placemark.geometry._coordinates[1]]],{delay:1}).then(()=>{
+        this.map.setCenter(this.map.getCenter(),17);
+        this.followSub = u.coords.onChangeEvent.pipe(filter((val, index) => index%100===0)).subscribe((e)=>{
+          this.map.panTo([this.map.getCenter(),[e.newVal[0],e.newVal[1]]],{delay:1});
+        });
+        this.map.behaviors.disable('scrollZoom');
+        this.map.events.add('click',()=>{
+          if(this.followSub)
+          {
+            this.followSub.unsubscribe();
+            this.map.events.remove('click');
+            this.map.behaviors.enable('scrollZoom');
+          }
+        });
+      });
+    }
+  }
   onClickedAtPlacemark(e: IClickEvent) {
     if (e && e.originalEvent && e.originalEvent.target && e.originalEvent.target.guid) {
       let user = this.engine.getUserByPlacemarkGuid(e.originalEvent.target.guid);
@@ -68,5 +94,6 @@ export class RootComponent implements OnInit,OnDestroy {
   ngOnDestroy(): void {
     this.selectedUser.unsubscribe();
     this.engine.destroy();
+    this.followSub.unsubscribe();
   }
 }

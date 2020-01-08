@@ -1,11 +1,2 @@
-<app-info-card *ngIf="selectedUser.value" [$user]="selectedUser.asObservable()" (onClose)="closeCard()" (onRemove)="remove($event)"></app-info-card>
 <div id="map"></div>
-<button mat-raised-button color="accent" [matBadge]="users.length" (click)="addUser($event)" class="add-button">Add User</button>
-<h3>Users List:</h3>
-<mat-selection-list>
-  <mat-list-item *ngFor="let user of users">
-    {{user.name}}
-    <img [src]="user.image" width="32px" height="32px" alt="IMAGE">
-  </mat-list-item>
-</mat-selection-list>
-
+<app-user-editor [users]="users" (UserSelectedEvent)="selectUser($event)" (AddNewUserEvent)="addUser($event)" (DeleteUserEvent)="remove($event)"></app-user-editor>

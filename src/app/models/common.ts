@@ -6,12 +6,37 @@ export enum Direction {
   U, R, D, L, UR, DR, DL, UL
 }
 export class UserCoords {
-  coords_x: number;
-  coords_y: number;
+  get coords_y(): number {
+    return this._coords_y;
+  }
+
+  set coords_y(value: number) {
+    this._onChangeEventEmitter.next(<ICoordsChangeEvent>{
+      newVal: [this.coords_x,value],
+      prevVal:[this.coords_x,this.coords_y],
+    });
+    this._coords_y = value;
+  }
+  get coords_x(): number {
+    return this._coords_x;
+  }
+  set coords_x(value: number) {
+    this._onChangeEventEmitter.next(<ICoordsChangeEvent>{
+      newVal: [value,this.coords_y],
+      prevVal:[this.coords_x,this.coords_y],
+    });
+    this._coords_x = value;
+  }
+  private _coords_x: number;
+  private _coords_y: number;
+  public onChangeEvent:Observable<ICoordsChangeEvent>;
+  private _onChangeEventEmitter: Subject<ICoordsChangeEvent>;
 
   constructor(x: number, y: number) {
-    this.coords_x = x;
-    this.coords_y = y;
+    this._coords_x = x;
+    this._coords_y = y;
+    this._onChangeEventEmitter = new Subject<ICoordsChangeEvent>();
+    this.onChangeEvent = this._onChangeEventEmitter.asObservable();
   }
 }
 
@@ -22,7 +47,14 @@ export interface IUser {
 }
 
 export class User implements IUser{
+  get lifetime(): number {
+    return this._lifetime;
+  }
+  get lifetimeAsSeconds(): number {
+    return (this._lifetime/1000)-((this._lifetime%1000)/1000);
+  }
   private _coords: UserCoords;
+  private _lifetime:number;
   get coords(): UserCoords {
     return this._coords;
   }
@@ -48,12 +80,7 @@ export class User implements IUser{
   }
 
   set coords(value: UserCoords) {
-    let e = <IUserChangeEvent>{
-      newVal: value,
-      prevVal:this.coords,
-    };
     this._coords = value;
-    this._onChangeEventEmitter.next(e);
   }
 
   set currentState(value: Direction) {
@@ -71,7 +98,9 @@ export class User implements IUser{
   private readonly _image:string;
   private _currentState: Direction;
   private _onChangeEventEmitter: Subject<IUserChangeEvent>;
+  private readonly _lifecycleTimerID;
   public thoughts: string;
+  public directionDuration:number = 2000;
 
   public onChangeEvent:Observable<IUserChangeEvent>;
   constructor(coords: UserCoords, name: string, currentState: Direction, placemark: IPlacemark, probablyMatrix: ProbablyMatrix, image: string) {
@@ -83,9 +112,22 @@ export class User implements IUser{
     this._image = image;
     this._onChangeEventEmitter = new Subject<IUserChangeEvent>();
     this.onChangeEvent = this._onChangeEventEmitter.asObservable();
+    this._lifetime = 0;
+    this._lifecycleTimerID = setInterval(()=>{
+      this._lifetime++;
+    },1);
+
+  }
+  destroy()
+  {
+    clearInterval(this._lifecycleTimerID);
   }
 }
 export interface IUserChangeEvent {
-  newVal:UserCoords|Direction,
-  prevVal:UserCoords|Direction,
+  newVal:Direction,
+  prevVal:Direction,
+}
+export interface ICoordsChangeEvent {
+  newVal:number[],
+  prevVal:number[],
 }

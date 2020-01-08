@@ -8,9 +8,13 @@ export class UserService {
 
   constructor() {
   }
+
   public move(user: User, step: number): Promise<void> {
     return new Promise(resolve => {
-      this.calculateNextDirection(user);
+      if (Math.round(user.lifetime/10) % (user.directionDuration/10) === 0) {
+        this.calculateNextDirection(user);
+        console.log(`${Math.round(user.lifetime/10)}:${user.directionDuration/10}:${Direction[user.currentState]}`);
+      }
       let x = user.coords.coords_x;
       let y = user.coords.coords_y;
       if (user.currentState >= 4) {

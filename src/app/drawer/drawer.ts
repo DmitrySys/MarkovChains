@@ -19,14 +19,14 @@ export class Drawer {
     for (let direction in Object.values(Direction).slice(0,Object.values(Direction).length/2)) {
 
       let img = new Image(this.size,this.size);
-      img.src = Images.getDreawerImages(Direction[direction], false);
+      img.src =  Images.getDrawerImages(direction, false).asBase64;
       if(img.src&&img.src !== '')
       {
         this.imgs.set(Direction[direction], img);
       }
 
       let activeImg = new Image(this.size,this.size);
-      activeImg.src = Images.getDreawerImages(Direction[direction],true);
+      activeImg.src = Images.getDrawerImages(direction,true).asBase64;
       if(activeImg.src&&activeImg.src !== '') {
         this.activeImgs.set(Direction[direction], activeImg);
       }
@@ -57,18 +57,7 @@ export class Drawer {
     let active = Direction[this.user.currentState];
     this.points.forEach((item:Point) => {
       let img = active === item.direction ? this.activeImgs.get(item.direction) : this.imgs.get(item.direction);
-      if(img.isLoaded)
-      {
-        this.ctx.drawImage(img,item.x,item.y,this.size,this.size);
-      } else {
-        this.taskCounter++;
-        img.onload = () => {
-          this.ctx.drawImage(img,item.x,item.y,this.size,this.size);
-          img.isLoaded = true;
-          active === item.direction ? this.activeImgs.set(item.direction,img) : this.imgs.set(item.direction,img);
-          this.taskCounter--;
-        };
-      }
+      this.ctx.drawImage(img,item.x,item.y,this.size,this.size);
     });
     this.isRendering = false;
   }

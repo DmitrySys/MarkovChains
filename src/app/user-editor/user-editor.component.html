@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="cell">
+    <button mat-raised-button color="accent" [matBadge]="users.length" (click)="addUser()" class="add-button">Add User</button>
+    <h3>Users List:</h3>
+    <mat-action-list>
+      <div class="user-container" *ngFor="let user of users">
+        <button mat-list-item (click)="selectUser(user)">
+          <img matListAvatar [src]="user.image" width="32px" height="32px" alt="IMAGE">
+          <span matLine>{{user.name}}</span>
+          <span class="thoughts" matLine>{{user.thoughts}}</span>
+        </button>
+        <button (click)="deleteUser(user)">
+          <i class="material-icons">
+            delete
+          </i>
+        </button>
+      </div>
+    </mat-action-list>
+  </div>
+  <div class="cell">
+  </div>
+  <div class="cell">
+    <mat-tab-group>
+      <mat-tab label="matrix">
+        <app-matrix-view *ngIf="selectedUser" [user]="selectedUser"></app-matrix-view>
+      </mat-tab>
+      <mat-tab label="graph">
+        <app-graph-view *ngIf="selectedUser" [user]="selectedUser"></app-graph-view>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

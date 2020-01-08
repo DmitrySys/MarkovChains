@@ -10,6 +10,7 @@ import {
 import {Observable, Subscription} from "rxjs";
 import {IUserChangeEvent, User} from "../models/common";
 import {Drawer} from "../drawer/drawer";
+import {IProbabilityMatrix, ProbablyMatrix} from "../tools/probabilityMatrix";
 
 @Component({
   selector: 'app-info-card',
@@ -22,10 +23,10 @@ export class InfoCardComponent implements OnInit, OnChanges,OnDestroy {
   @Output() onRemove:EventEmitter<User>;
   user: User;
   @ViewChild('canvas', {static: true}) canvas: ElementRef<HTMLCanvasElement>;
+  private drawer: Drawer;
   private sub: Subscription;
   private ctx: CanvasRenderingContext2D;
-  private drawer: Drawer;
-
+  private matrix:IProbabilityMatrix<User>;
   constructor() {
     this.onClose = new EventEmitter<any>();
     this.onRemove = new EventEmitter<User>();
@@ -40,6 +41,7 @@ export class InfoCardComponent implements OnInit, OnChanges,OnDestroy {
       this.sub = this.$user.subscribe((value: User) => {
         if (value) {
           this.user = value;
+          this.matrix = this.user.probablyMatrix;
           setTimeout(() => this.draw(), 100);
         }
       });

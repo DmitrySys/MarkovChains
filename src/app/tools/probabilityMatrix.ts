@@ -1,10 +1,10 @@
 ﻿import {Direction, IUser, User} from "../models/common";
 
 export class ProbablyMatrix implements IProbabilityMatrix<User>{
-  private readonly matrix: Array<number[]>;
+  private readonly _matrix: Array<number[]>;
 
   constructor(matrix: Array<number[]>) {
-    this.matrix = matrix;
+    this._matrix = matrix;
   }
 
   public getByDirection(direction: Direction): number[] {
@@ -29,35 +29,39 @@ export class ProbablyMatrix implements IProbabilityMatrix<User>{
   }
 
   get U(): number[] {
-    return this.matrix[Direction[Direction.U]];
+    return this._matrix[Direction[Direction.U]];
   }
 
   get R(): number[] {
-    return this.matrix[Direction[Direction.R]];
+    return this._matrix[Direction[Direction.R]];
   }
 
   get D(): number[] {
-    return this.matrix[Direction[Direction.D]];
+    return this._matrix[Direction[Direction.D]];
   }
 
   get L(): number[] {
-    return this.matrix[Direction[Direction.L]];
+    return this._matrix[Direction[Direction.L]];
   }
 
   get UR(): number[] {
-    return this.matrix[Direction[Direction.UR]];
+    return this._matrix[Direction[Direction.UR]];
   }
 
   get DR(): number[] {
-    return this.matrix[Direction[Direction.DR]];
+    return this._matrix[Direction[Direction.DR]];
   }
 
   get DL(): number[] {
-    return this.matrix[Direction[Direction.DL]];
+    return this._matrix[Direction[Direction.DL]];
   }
 
   get UL(): number[] {
-    return this.matrix[Direction[Direction.UL]];
+    return this._matrix[Direction[Direction.UL]];
+  }
+  get matrix(): Array<number[]>
+  {
+    return this._matrix;
   }
 }
 export interface IProbabilityMatrix<T extends IUser> {

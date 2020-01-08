@@ -21,7 +21,8 @@ export class UserBuilder {
     const points = this.spawnPoints;
     const spawnPoint = points[Math.floor(Math.random() * points.length)];
     const placemark = this.mapService.addPlacemark([spawnPoint.x, spawnPoint.y]);
-    let u =  new User(<UserCoords>{coords_x:spawnPoint.x,coords_y:spawnPoint.y},Names.getRandomName(),Direction.U, placemark,matrix,Images.getRandomImage());
+    const coords = new UserCoords(spawnPoint.x,spawnPoint.y);
+    let u =  new User(coords,Names.getRandomName(),Direction.U, placemark,matrix,Images.getRandomImage());
     u.thoughts = Names.getThought();
     return u;
   }

@@ -1,0 +1,12 @@
+<table>
+  <tr>
+    <th>0</th>
+    <th *ngFor="let row of matrix">
+      {{row.direction}}
+    </th>
+  </tr>
+  <tr *ngFor="let row of matrix;let i = index" [ngClass]="isCurrentState(row)">
+    <td><b>{{row.direction}}</b></td>
+    <td *ngFor="let value of row.value">{{value}}%</td>
+  </tr>
+</table>

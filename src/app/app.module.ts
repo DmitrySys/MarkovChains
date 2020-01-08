@@ -16,13 +16,21 @@ import {MatListModule} from "@angular/material/list";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {MatBadgeModule} from "@angular/material/badge";
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {MatTabsModule} from "@angular/material/tabs";
+import {MatGridListModule} from "@angular/material/grid-list";
+import { MatrixViewComponent } from './matrix-view/matrix-view.component';
+import { UserEditorComponent } from './user-editor/user-editor.component';
+import { GraphViewComponent } from './graph-view/graph-view.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RootComponent,
     AddPointDialogComponent,
-    InfoCardComponent
+    InfoCardComponent,
+    MatrixViewComponent,
+    UserEditorComponent,
+    GraphViewComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +44,9 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
     MatListModule,
     DragDropModule,
     MatBadgeModule,
-    ScrollingModule
+    ScrollingModule,
+    MatTabsModule,
+    MatGridListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
