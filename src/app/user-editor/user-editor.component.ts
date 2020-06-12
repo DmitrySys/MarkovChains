@@ -8,14 +8,17 @@ import {User} from "../models/common";
 })
 export class UserEditorComponent implements OnInit {
   @Input() users:User[];
+  @Input() stationCount:number;
   @Output() UserSelectedEvent: EventEmitter<User>;
   @Output() AddNewUserEvent: EventEmitter<void>;
   @Output() DeleteUserEvent: EventEmitter<User>;
+  @Output() AddNewVBaseStationEvent: EventEmitter<void>;
 
   selectedUser: User;
   constructor() {
     this.UserSelectedEvent = new EventEmitter<User>();
     this.AddNewUserEvent = new EventEmitter<void>();
+    this.AddNewVBaseStationEvent = new EventEmitter<void>();
     this.DeleteUserEvent = new EventEmitter<User>();
   }
 
@@ -25,7 +28,10 @@ export class UserEditorComponent implements OnInit {
   {
     this.AddNewUserEvent.emit();
   }
-
+  addBaseStation()
+  {
+    this.AddNewVBaseStationEvent.emit();
+  }
   selectUser(user:User):void
   {
     this.selectedUser = user;

@@ -1,8 +1,11 @@
+<div class="actions-container">
+  <button mat-raised-button color="accent" [matBadge]="users.length" (click)="addUser()" class="add-button">Add User</button>
+  <button mat-raised-button color="accent" [matBadge]="stationCount" (click)="addBaseStation()" class="add-button">Add Base Station</button>
+</div>
 <div class="container">
   <div class="cell">
-    <button mat-raised-button color="accent" [matBadge]="users.length" (click)="addUser()" class="add-button">Add User</button>
     <h3>Users List:</h3>
-    <mat-action-list>
+    <mat-action-list class="user-list">
       <div class="user-container" *ngFor="let user of users">
         <button mat-list-item (click)="selectUser(user)">
           <img matListAvatar [src]="user.image" width="32px" height="32px" alt="IMAGE">
@@ -17,10 +20,11 @@
       </div>
     </mat-action-list>
   </div>
-  <div class="cell">
-  </div>
-  <div class="cell">
+  <div class="cell" *ngIf="selectedUser">
     <mat-tab-group>
+      <mat-tab label="RSPR">
+        <app-rspr-info *ngIf="selectedUser" [user]="selectedUser"></app-rspr-info>
+      </mat-tab>
       <mat-tab label="matrix">
         <app-matrix-view *ngIf="selectedUser" [user]="selectedUser"></app-matrix-view>
       </mat-tab>

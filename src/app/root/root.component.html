@@ -1,2 +1,5 @@
-<div id="map"></div>
-<app-user-editor [users]="users" (UserSelectedEvent)="selectUser($event)" (AddNewUserEvent)="addUser($event)" (DeleteUserEvent)="remove($event)"></app-user-editor>
+<div id="map-container">
+  <div id="map"></div>
+</div>
+<app-user-editor [users]="users" (UserSelectedEvent)="selectUser($event)" (AddNewUserEvent)="addUser($event)"
+                 (DeleteUserEvent)="remove($event)" (AddNewVBaseStationEvent)="addBaseStation()" [stationCount]="this.stationsService.baseStations.length"></app-user-editor>

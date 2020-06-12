@@ -1,11 +1,12 @@
 ﻿import {ProbablyMatrix} from "../tools/probabilityMatrix";
 import {IPlacemark} from "./yandex-api";
 import {Observable, Subject} from "rxjs";
+import {IRsprInfo} from "./baseStation";
 
 export enum Direction {
   U, R, D, L, UR, DR, DL, UL
 }
-export class UserCoords {
+export class BaseCoords {
   get coords_y(): number {
     return this._coords_y;
   }
@@ -41,9 +42,11 @@ export class UserCoords {
 }
 
 export interface IUser {
-  coords: UserCoords;
+  coords: BaseCoords;
   name: string;
   image:string;
+  rsprInfo:IRsprInfo;
+  selected:boolean;
 }
 
 export class User implements IUser{
@@ -53,9 +56,9 @@ export class User implements IUser{
   get lifetimeAsSeconds(): number {
     return (this._lifetime/1000)-((this._lifetime%1000)/1000);
   }
-  private _coords: UserCoords;
+  private _coords: BaseCoords;
   private _lifetime:number;
-  get coords(): UserCoords {
+  get coords(): BaseCoords {
     return this._coords;
   }
 
@@ -79,10 +82,13 @@ export class User implements IUser{
     return this._image;
   }
 
-  set coords(value: UserCoords) {
+  set coords(value: BaseCoords) {
     this._coords = value;
   }
-
+  set rsprInfo(value: IRsprInfo)
+  {
+    this._onRsprInfoChangedEmitter.next({rsprInfo:value});
+  }
   set currentState(value: Direction) {
     let e = <IUserChangeEvent>{
       newVal: value,
@@ -99,11 +105,13 @@ export class User implements IUser{
   private _currentState: Direction;
   private _onChangeEventEmitter: Subject<IUserChangeEvent>;
   private readonly _lifecycleTimerID;
+  private  _onRsprInfoChangedEmitter:Subject<IUserRsprChangedEvent>;
   public thoughts: string;
   public directionDuration:number = 2000;
 
   public onChangeEvent:Observable<IUserChangeEvent>;
-  constructor(coords: UserCoords, name: string, currentState: Direction, placemark: IPlacemark, probablyMatrix: ProbablyMatrix, image: string) {
+  public onRsprInfoChangeEvent:Observable<IUserRsprChangedEvent>;
+  constructor(coords: BaseCoords, name: string, currentState: Direction, placemark: IPlacemark, probablyMatrix: ProbablyMatrix, image: string) {
     this._coords = coords;
     this._name = name;
     this._currentState = currentState;
@@ -111,7 +119,9 @@ export class User implements IUser{
     this._probablyMatrix = probablyMatrix;
     this._image = image;
     this._onChangeEventEmitter = new Subject<IUserChangeEvent>();
+    this._onRsprInfoChangedEmitter = new Subject<IUserRsprChangedEvent>();
     this.onChangeEvent = this._onChangeEventEmitter.asObservable();
+    this.onRsprInfoChangeEvent = this._onRsprInfoChangedEmitter.asObservable();
     this._lifetime = 0;
     this._lifecycleTimerID = setInterval(()=>{
       this._lifetime++;
@@ -122,10 +132,15 @@ export class User implements IUser{
   {
     clearInterval(this._lifecycleTimerID);
   }
+
+  selected: boolean;
 }
 export interface IUserChangeEvent {
   newVal:Direction,
   prevVal:Direction,
+}
+export interface IUserRsprChangedEvent {
+  rsprInfo:IRsprInfo;
 }
 export interface ICoordsChangeEvent {
   newVal:number[],

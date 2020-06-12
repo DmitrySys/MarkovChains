@@ -3,6 +3,7 @@
   options: any;
   events: any;
   guid: string;
+  properties:any
 }
 
 export interface IGeometry {
@@ -20,17 +21,18 @@ export interface IClickEvent {
 }
 
 export interface IMap {
+  options:any
   events: {
     add(event:string,callback);
-    remove(event:string);
+    remove(event:string,any?);
   },
   behaviors: {
     disable(el: string);
     enable(el: string);
   }
   geoObjects: {
-    add(placemark: IPlacemark);
-    remove(placemark: IPlacemark);
+    add(obj:any);
+    remove(obj:any);
   }
   action: {
     execute(action);
@@ -44,12 +46,14 @@ export interface IMap {
   getZoom();
 
   destroy();
-
   setCenter(center: number[], zoom?: number, options?: { checkZoomRange: boolean });
+  converter:any;
 }
 
 export interface IYandexMapsApi {
   Map(element: HTMLDivElement, opts: { center: number[]; zoom: number }): void;
 
-  Placemark(coords: number[]): void;
+  Placemark(coords: number[],_,_2): void;
+  Circle(opts:any): void;
+  coordSystem:any;
 }

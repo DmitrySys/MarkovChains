@@ -1,6 +1,7 @@
 ﻿import {Subject} from "rxjs";
 import {User} from "../models/common";
 import {UserService} from "../services/user.service";
+import {RsprService} from "../services/rspr-service.service";
 
 interface IEngineOptions {
   stepTime: number;
@@ -14,12 +15,10 @@ export class Engine {
   private isWorking: boolean;
   private isPaused:boolean;
   private onChangeEvent: Subject<User>;
-  private userService:UserService;
 
-  constructor(userService:UserService, opts?: IEngineOptions) {
+  constructor(public userService:UserService,public rsprService:RsprService, opts?: IEngineOptions) {
     this._users = new Array<User>();
     this.onChangeEvent = new Subject<User>();
-    this.userService = userService;
     this.stepTime = opts && opts.stepTime ? opts.stepTime : 33;
     this.distance = opts && opts.distance ? opts.distance : 0.001;
   }
@@ -78,6 +77,10 @@ export class Engine {
   private onStep(): void {
     this._users.forEach((item) => {
       this.userService.move(item,this.distance);
+      if(item.selected)
+      {
+        item.rsprInfo = this.rsprService.getRsprInfo(item);
+      }
     });
   }
 
@@ -118,7 +121,4 @@ export class Engine {
       }
     }
   }
-
-
-
 }
